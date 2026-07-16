@@ -4,10 +4,10 @@ export interface ProduceItem {
   id: string
   name: string
   unit: string
-  price: number
+  price: number | null
   risk: RiskLevel
   riskLabel: string
   trend: string
   trendDirection: 'up' | 'down' | 'flat'
-  chart: number[]
+  chart?: number[]
 }
