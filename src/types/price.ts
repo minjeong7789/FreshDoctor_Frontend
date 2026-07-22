@@ -30,9 +30,9 @@ export interface PriceChangeResponse {
 export interface PriceTrendResponse {
   itemCode: string
   itemName: string
-  current: CurrentPriceResponse
+  current: CurrentPriceResponse | null
   normalPrice: number | null
-  priceChange: PriceChangeResponse
-  lastUpdatedAt: ISODateTimeString
+  priceChange: PriceChangeResponse | null
+  lastUpdatedAt: ISODateTimeString | null
   prices: PricePointResponse[]
 }

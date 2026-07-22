@@ -1,8 +1,32 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { useEffect } from 'react'
+import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { Logo } from '../components/common/Logo'
 import { ROUTES } from '../constants/routes'
 
+const DEFAULT_ITEM_CODE = '1001'
+const LAST_VIEWED_ITEM_KEY = 'lastViewedItemCode'
+
+function getLastViewedItemCode() {
+  const savedItemCode = localStorage.getItem(LAST_VIEWED_ITEM_KEY)
+
+  return savedItemCode && /^\d+$/.test(savedItemCode)
+    ? savedItemCode
+    : DEFAULT_ITEM_CODE
+}
+
 export function AppLayout() {
+  const { pathname } = useLocation()
+  const currentItemCode = pathname.match(/^\/items\/(\d+)$/)?.[1]
+  const itemDetailPath = ROUTES.itemDetail(
+    currentItemCode ?? getLastViewedItemCode(),
+  )
+
+  useEffect(() => {
+    if (currentItemCode) {
+      localStorage.setItem(LAST_VIEWED_ITEM_KEY, currentItemCode)
+    }
+  }, [currentItemCode])
+
   return (
     <div className="app-shell">
       <header className="topnav">
@@ -10,7 +34,7 @@ export function AppLayout() {
           <NavLink to={ROUTES.dashboard} className="brand-link"><Logo /></NavLink>
           <nav className="nav-links" aria-label="주요 메뉴">
             <NavLink to={ROUTES.dashboard} end>대시보드</NavLink>
-            <NavLink to={ROUTES.itemDetail('cabbage')}>품목 상세</NavLink>
+            <NavLink to={itemDetailPath}>품목 상세</NavLink>
             <NavLink to={ROUTES.itemSettings}>품목 설정</NavLink>
             <NavLink to={ROUTES.alerts}>알림함</NavLink>
           </nav>

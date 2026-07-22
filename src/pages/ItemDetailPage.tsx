@@ -1,23 +1,139 @@
 import { Link, useParams } from 'react-router-dom'
+import { EmptyState } from '../components/common/EmptyState'
+import { ErrorMessage } from '../components/common/ErrorMessage'
+import { LoadingSpinner } from '../components/common/LoadingSpinner'
 import { RiskBadge } from '../components/common/RiskBadge'
 import { Sparkline } from '../components/items/Sparkline'
 import { ROUTES } from '../constants/routes'
-import { mockItems } from '../data/mockItems'
+import { useItemQuery } from '../hooks/useItemQuery'
+import { usePriceTrendQuery } from '../hooks/usePriceTrendQuery'
+import { useRecommendationQuery } from '../hooks/useRecommendationQuery'
+import { useRiskQuery } from '../hooks/useRiskQuery'
+import { toRiskLabel, toRiskLevel } from '../utils/risk'
 
-const factors = [['가격 급등률', 88], ['가격 변동성', 70], ['평년 대비 괴리', 64], ['기상 위험', 82], ['수급 이슈', 55]] as const
+const factorLabels: Record<string, string> = {
+  PRICE_INCREASE: '가격 급등률',
+  NORMAL_YEAR: '평년 대비 괴리',
+  VOLATILITY: '가격 변동성',
+  WEATHER: '기상 위험',
+  NEWS_SUPPLY: '뉴스·수급 위험',
+}
+
+function formatUpdatedAt(value: string | null | undefined) {
+  if (!value) return '업데이트 정보 없음'
+
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return '업데이트 시간 확인 불가'
+
+  return new Intl.DateTimeFormat('ko-KR', {
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(date)
+}
+
+function formatPrice(value: number) {
+  return `${value.toLocaleString('ko-KR')}원`
+}
 
 export function ItemDetailPage() {
-  const { itemId } = useParams()
-  const item = mockItems.find(({ id }) => id === itemId) ?? mockItems[0]
+  const { itemId = '' } = useParams()
+  const itemQuery = useItemQuery(itemId)
+  const priceQuery = usePriceTrendQuery(itemId, 14)
+  const riskQuery = useRiskQuery(itemId)
+  const recommendationQuery = useRecommendationQuery(itemId)
+
+  if (!itemId) {
+    return <ErrorMessage title="품목을 확인할 수 없어요." message="올바른 품목을 다시 선택해 주세요." />
+  }
+
+  if (
+    itemQuery.isPending
+    || priceQuery.isPending
+    || riskQuery.isPending
+    || recommendationQuery.isPending
+  ) {
+    return <LoadingSpinner message="품목 상세 정보를 불러오고 있어요." />
+  }
+
+  if (itemQuery.error || riskQuery.error || !itemQuery.data || !riskQuery.data) {
+    return (
+      <ErrorMessage
+        error={itemQuery.error ?? riskQuery.error}
+        title="품목 상세 정보를 불러오지 못했어요."
+        onRetry={() => {
+          void itemQuery.refetch()
+          void priceQuery.refetch()
+          void riskQuery.refetch()
+          void recommendationQuery.refetch()
+        }}
+      />
+    )
+  }
+
+  const item = itemQuery.data
+  const risk = riskQuery.data
+  const price = priceQuery.data
+  const recommendation = recommendationQuery.data
+  const pricePoints = price?.prices ?? []
+  const currentPrice = price?.current?.price ?? null
+  const riskLevel = toRiskLevel(risk.riskGrade)
+  const riskLabel = toRiskLabel(risk.riskGrade)
+
   return (
     <>
       <Link className="back-link" to={ROUTES.dashboard}>← 대시보드로 돌아가기</Link>
-      <header className="detail-heading"><div><h1>{item.name}</h1><p>{item.unit} 도매 기준 · 마지막 업데이트 10분 전</p></div><RiskBadge level={item.risk}>{item.riskLabel} 단계 · 78점</RiskBadge></header>
+      <header className="detail-heading">
+        <div>
+          <h1>{item.itemName}</h1>
+          <p>{item.unit} 기준 · 마지막 업데이트 {formatUpdatedAt(price?.lastUpdatedAt ?? risk.lastUpdatedAt)}</p>
+        </div>
+        <RiskBadge level={riskLevel}>{riskLabel} 단계 · {risk.finalScore}점</RiskBadge>
+      </header>
       <section className="detail-grid">
-        <article className="card"><h2>최근 14일 가격 추이</h2><div className="large-chart"><Sparkline values={[12, 13, 16, 18, 22, 21, 28, 26, 31, 35, 37, 42, 46, 49]} color="#de7b3b" /></div><div className="chart-caption"><span>14일 전 · 15,200원</span><span>오늘 · {item.price === null ? '가격 정보 없음' : `${item.price.toLocaleString()}원`}</span></div></article>
-        <article className="card"><h2>위험도 5개 요소</h2>{factors.map(([name, score]) => <div className="factor" key={name}><div><span>{name}</span><b>{score} / 100</b></div><div className="factor__track"><i style={{ width: `${score}%` }} /></div></div>)}</article>
+        <article className="card">
+          <h2>최근 14일 가격 추이</h2>
+          {!price || priceQuery.error || pricePoints.length < 2 ? (
+            <EmptyState
+              title="가격 추이 정보가 없어요."
+              description="가격 데이터가 수집되면 최근 14일 추이를 확인할 수 있어요."
+              icon="₩"
+            />
+          ) : (
+            <>
+              <div className="large-chart">
+                <Sparkline values={pricePoints.map(({ price: value }) => value)} color="#de7b3b" />
+              </div>
+              <div className="chart-caption">
+                <span>14일 전 · {formatPrice(pricePoints[0].price)}</span>
+                <span>현재 · {currentPrice === null ? '가격 정보 없음' : formatPrice(currentPrice)}</span>
+              </div>
+            </>
+          )}
+        </article>
+        <article className="card">
+          <h2>위험도 5개 요소</h2>
+          {risk.factors.map((factor) => (
+            <div className="factor" key={factor.name}>
+              <div>
+                <span>{factorLabels[factor.name] ?? factor.name}</span>
+                <b>{factor.score === null ? '정보 없음' : `${factor.score} / ${factor.maxScore}`}</b>
+              </div>
+              <div className="factor__track">
+                <i style={{ width: `${Math.min(100, Math.max(0, factor.displayRatio))}%` }} />
+              </div>
+            </div>
+          ))}
+        </article>
       </section>
-      <section className="ai-banner"><span>✦</span><div><h2>AI 추천 행동</h2><p>이번 주 {item.name} 발주량을 평소보다 30% 줄이고 대체 품목의 비중을 늘리는 것을 추천합니다.</p></div></section>
+      <section className="ai-banner">
+        <span>✦</span>
+        <div>
+          <h2>AI 추천 행동</h2>
+          <p>{recommendation?.recommendation ?? '아직 생성된 AI 추천이 없습니다.'}</p>
+        </div>
+      </section>
       <div className="action-row"><button className="button button--primary">발주량 조정하기</button><button className="button button--ghost">이 품목 알림 켜기</button></div>
     </>
   )
