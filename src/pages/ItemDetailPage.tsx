@@ -37,6 +37,16 @@ function formatPrice(value: number) {
   return `${value.toLocaleString('ko-KR')}원`
 }
 
+function formatPriceDate(value: string) {
+  const date = new Date(`${value}T00:00:00`)
+  if (Number.isNaN(date.getTime())) return value
+
+  return new Intl.DateTimeFormat('ko-KR', {
+    month: 'long',
+    day: 'numeric',
+  }).format(date)
+}
+
 export function ItemDetailPage() {
   const { itemId = '' } = useParams()
   const itemQuery = useItemQuery(itemId)
@@ -77,6 +87,9 @@ export function ItemDetailPage() {
   const price = priceQuery.data
   const recommendation = recommendationQuery.data
   const pricePoints = price?.prices ?? []
+  const priceTrendTitle = pricePoints.length > 0
+    ? `최근 ${pricePoints.length}일 가격 추이`
+    : '최근 가격 추이'
   const currentPrice = price?.current?.price ?? null
   const riskLevel = toRiskLevel(risk.riskGrade)
   const riskLabel = toRiskLabel(risk.riskGrade)
@@ -93,7 +106,7 @@ export function ItemDetailPage() {
       </header>
       <section className="detail-grid">
         <article className="card">
-          <h2>최근 14일 가격 추이</h2>
+          <h2>{priceTrendTitle}</h2>
           {!price || priceQuery.error || pricePoints.length < 2 ? (
             <EmptyState
               title="가격 추이 정보가 없어요."
@@ -106,7 +119,7 @@ export function ItemDetailPage() {
                 <Sparkline values={pricePoints.map(({ price: value }) => value)} color="#de7b3b" />
               </div>
               <div className="chart-caption">
-                <span>14일 전 · {formatPrice(pricePoints[0].price)}</span>
+                <span>{formatPriceDate(pricePoints[0].date)} · {formatPrice(pricePoints[0].price)}</span>
                 <span>현재 · {currentPrice === null ? '가격 정보 없음' : formatPrice(currentPrice)}</span>
               </div>
             </>
