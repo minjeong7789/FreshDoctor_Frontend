@@ -1,8 +1,9 @@
-import { useEffect } from 'react'
-import { NavLink, Outlet, useLocation } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { Logo } from '../components/common/Logo'
 import { ROUTES } from '../constants/routes'
 import { useDashboardQuery } from '../hooks/useDashboardQuery'
+import { clearAuthToken, isAuthenticated } from '../utils/authToken'
 
 const DEFAULT_ITEM_CODE = '1001'
 const LAST_VIEWED_ITEM_KEY = 'lastViewedItemCode'
@@ -17,6 +18,8 @@ function getLastViewedItemCode() {
 
 export function AppLayout() {
   const { pathname } = useLocation()
+  const navigate = useNavigate()
+  const [loggedIn, setLoggedIn] = useState(isAuthenticated)
   const { data: dashboard } = useDashboardQuery()
   const currentItemCode = pathname.match(/^\/items\/(\d+)$/)?.[1]
   const itemDetailPath = ROUTES.itemDetail(
@@ -29,6 +32,12 @@ export function AppLayout() {
     }
   }, [currentItemCode])
 
+  const handleLogout = () => {
+    clearAuthToken()
+    setLoggedIn(false)
+    navigate(ROUTES.dashboard)
+  }
+
   return (
     <div className="app-shell">
       <header className="topnav">
@@ -40,7 +49,15 @@ export function AppLayout() {
             <NavLink to={ROUTES.itemSettings}>품목 설정</NavLink>
             <NavLink to={ROUTES.alerts}>알림함</NavLink>
           </nav>
-          <div className="user"><span className="user__avatar">김</span><span><strong>김사장님</strong><small>점주</small></span></div>
+          {loggedIn ? (
+            <div className="user">
+              <span className="user__avatar">김</span>
+              <span className="user__meta"><strong>김사장님</strong><small>점주</small></span>
+              <button type="button" className="user__action" onClick={handleLogout}>로그아웃</button>
+            </div>
+          ) : (
+            <NavLink className="user-login" to={ROUTES.auth}>로그인 · 회원가입</NavLink>
+          )}
         </div>
       </header>
       <div className="status-strip">

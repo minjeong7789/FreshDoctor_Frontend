@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { getAccessToken } from '../utils/authToken'
 import { toApiError } from './errors'
 
 const DEFAULT_API_BASE_URL = '/api'
@@ -14,6 +15,16 @@ export const apiClient = axios.create({
     Accept: 'application/json',
     'Content-Type': 'application/json',
   },
+})
+
+apiClient.interceptors.request.use((config) => {
+  const accessToken = getAccessToken()
+
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`
+  }
+
+  return config
 })
 
 apiClient.interceptors.response.use(
