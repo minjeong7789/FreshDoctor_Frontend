@@ -1,5 +1,8 @@
+import type { RiskGrade } from '../../types/risk'
+
 interface RiskGaugeProps {
   score: number
+  grade: RiskGrade
 }
 
 const ranges = [
@@ -9,6 +12,14 @@ const ranges = [
   { label: '경계', color: '#de7b3b' },
   { label: '심각', color: '#c0392b' },
 ]
+
+const gradeIndex: Record<RiskGrade, number> = {
+  STABLE: 0,
+  WATCH: 1,
+  CAUTION: 2,
+  ALERT: 3,
+  SEVERE: 4,
+}
 
 function polarPoint(angle: number, radius: number) {
   const radians = (angle * Math.PI) / 180
@@ -21,11 +32,11 @@ function arcPath(startAngle: number, endAngle: number) {
   return `M ${start.x} ${start.y} A 76 76 0 0 1 ${end.x} ${end.y}`
 }
 
-export function RiskGauge({ score }: RiskGaugeProps) {
+export function RiskGauge({ score, grade }: RiskGaugeProps) {
   const safeScore = Math.min(100, Math.max(0, score))
   const needleAngle = 180 + safeScore * 1.8
   const needleEnd = polarPoint(needleAngle, 55)
-  const activeIndex = Math.min(4, Math.floor(safeScore / 20))
+  const activeIndex = gradeIndex[grade]
 
   return (
     <div className="risk-gauge" aria-label={`종합 위험도 ${safeScore}점, ${ranges[activeIndex].label} 단계`}>
