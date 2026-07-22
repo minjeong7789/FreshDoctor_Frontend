@@ -1,6 +1,6 @@
 import type { ISODateString, ISODateTimeString } from './api'
 
-export type RiskGrade = 'STABLE' | 'WATCH' | 'CAUTION' | 'ALERT' | 'SEVERE'
+export type RiskGrade = 'SAFE' | 'INTEREST' | 'CAUTION' | 'ALERT' | 'CRITICAL'
 
 export interface RiskFactorResponse {
   name: string

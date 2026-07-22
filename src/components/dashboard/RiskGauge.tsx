@@ -14,11 +14,11 @@ const ranges = [
 ]
 
 const gradeIndex: Record<RiskGrade, number> = {
-  STABLE: 0,
-  WATCH: 1,
+  SAFE: 0,
+  INTEREST: 1,
   CAUTION: 2,
   ALERT: 3,
-  SEVERE: 4,
+  CRITICAL: 4,
 }
 
 function polarPoint(angle: number, radius: number) {
