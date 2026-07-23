@@ -147,7 +147,6 @@ export function ItemDetailPage() {
           <p>{recommendation?.recommendation ?? '아직 생성된 AI 추천이 없습니다.'}</p>
         </div>
       </section>
-      <div className="action-row"><button className="button button--primary">발주량 조정하기</button><button className="button button--ghost">이 품목 알림 켜기</button></div>
     </>
   )
 }
