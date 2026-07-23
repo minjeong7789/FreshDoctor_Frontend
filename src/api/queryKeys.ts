@@ -4,6 +4,10 @@ interface DateRangeParams {
 }
 
 export const queryKeys = {
+  auth: {
+    all: ['auth'] as const,
+    currentUser: () => [...queryKeys.auth.all, 'current-user'] as const,
+  },
   dashboard: {
     all: ['dashboard'] as const,
     overview: () => [...queryKeys.dashboard.all, 'overview'] as const,

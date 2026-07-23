@@ -1,4 +1,5 @@
 import type {
+  CurrentUserResponse,
   LoginRequest,
   LoginResponse,
   MessageResponse,
@@ -38,5 +39,10 @@ export async function signup(request: SignupRequest) {
 
 export async function login(request: LoginRequest) {
   const { data } = await apiClient.post<LoginResponse>('/auth/login', request)
+  return data
+}
+
+export async function getCurrentUser() {
+  const { data } = await apiClient.get<CurrentUserResponse>('/users/me')
   return data
 }
