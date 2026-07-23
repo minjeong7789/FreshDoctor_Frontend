@@ -4,10 +4,12 @@ import { AlertsPage } from './pages/AlertsPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { ItemDetailPage } from './pages/ItemDetailPage'
 import { ItemSettingsPage } from './pages/ItemSettingsPage'
+import { AuthPage } from './pages/AuthPage'
 
 function App() {
   return (
     <Routes>
+      <Route path="auth" element={<AuthPage />} />
       <Route element={<AppLayout />}>
         <Route index element={<DashboardPage />} />
         <Route path="items/:itemId" element={<ItemDetailPage />} />
