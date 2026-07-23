@@ -2,11 +2,11 @@ import type { ISODateString, ISODateTimeString } from './api'
 import type { RiskGrade } from './risk'
 
 export interface DashboardGradeCountsResponse {
-  stable: number
-  watch: number
+  safe: number
+  interest: number
   caution: number
   alert: number
-  severe: number
+  critical: number
 }
 
 export interface DashboardTopRiskItemResponse {
