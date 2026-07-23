@@ -45,11 +45,11 @@ export function AppLayout() {
       </header>
       <div className="status-strip">
         <span>시장 위험 현황</span>
-        <b className="status status--safe">● 안정 {dashboard?.gradeCounts.stable ?? '-'} </b>
-        <b className="status status--watch">● 관심 {dashboard?.gradeCounts.watch ?? '-'}</b>
+        <b className="status status--safe">● 안정 {dashboard?.gradeCounts.safe ?? '-'} </b>
+        <b className="status status--watch">● 관심 {dashboard?.gradeCounts.interest ?? '-'}</b>
         <b className="status status--caution">● 주의 {dashboard?.gradeCounts.caution ?? '-'}</b>
         <b className="status status--alert">● 경계 {dashboard?.gradeCounts.alert ?? '-'}</b>
-        <b className="status status--severe">● 심각 {dashboard?.gradeCounts.severe ?? '-'}</b>
+        <b className="status status--severe">● 심각 {dashboard?.gradeCounts.critical ?? '-'}</b>
       </div>
       <main><Outlet /></main>
     </div>

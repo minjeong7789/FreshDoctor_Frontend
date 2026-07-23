@@ -55,11 +55,11 @@ export function DashboardPage() {
           <h2>{data.summary}</h2>
           <p>품목별 위험 점수와 최근 가격 변동을 확인해 발주 계획을 조정해 보세요.</p>
           <div className="chip-row">
-            <span className="chip chip--safe">안정 {gradeCounts.stable}개</span>
-            <span className="chip chip--watch">관심 {gradeCounts.watch}개</span>
+            <span className="chip chip--safe">안정 {gradeCounts.safe}개</span>
+            <span className="chip chip--watch">관심 {gradeCounts.interest}개</span>
             <span className="chip chip--caution">주의 {gradeCounts.caution}개</span>
             <span className="chip chip--alert">경계 {gradeCounts.alert}개</span>
-            <span className="chip risk-badge--severe">심각 {gradeCounts.severe}개</span>
+            <span className="chip risk-badge--severe">심각 {gradeCounts.critical}개</span>
           </div>
         </div>
       </section>
