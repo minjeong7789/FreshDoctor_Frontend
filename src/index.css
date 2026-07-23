@@ -59,7 +59,12 @@ h1,h2,h3,p { margin-top:0; }.page-heading,.detail-heading,.section-heading { dis
 .pick .pick__emoji { margin:0; color:inherit; font-size:25px; line-height:1.1; }
 .pick>span:last-child { margin:0; color:inherit; font-size:12px; }
 .pick--readonly { cursor:default; }.pick--readonly strong,.pick--readonly small { display:block; }.pick--readonly strong { font-size:13px; }.pick--readonly small { color:var(--muted); font-size:11px; }
+.pick strong,.pick small { display:block; }.pick strong { font-size:13px; }.pick small { color:var(--muted); font-size:11px; }.pick:disabled { cursor:not-allowed; opacity:.62; }.pick--selected:disabled { opacity:.78; }
 .selected-summary--pending { display:flex; flex-direction:column; gap:4px; margin-top:24px; color:var(--muted); }.selected-summary--pending strong { color:var(--brand); font-size:13px; }.selected-summary--pending span { font-size:12px; }
+.watch-items-error { margin:12px 0 0; color:var(--severe); font-size:12px; }
+.watch-items-notice { display:flex; align-items:center; justify-content:space-between; gap:16px; color:var(--muted); font-size:13px; }.watch-items-notice .button { display:inline-flex; align-items:center; text-decoration:none; }
+.watch-items-empty { margin:0; color:var(--muted); font-size:13px; }
+.watch-item-list { display:grid; gap:8px; }.watch-item-row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 12px; border-radius:10px; background:white; }.watch-item-row__name { display:flex; align-items:center; gap:8px; font-size:13px; }.watch-item-row__name i { font-style:normal; font-size:20px; }.watch-item-row__status { padding:5px 9px; border-radius:999px; background:#e5e9e1; color:var(--muted); font-size:11px; font-weight:700; }.watch-item-row__status--on { background:#e4f3e8; color:#1f5c3b; }
 .selected-chip>span { margin-right:3px; font-size:15px; }
 .data-state { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:260px; padding:36px 24px; border:1px dashed var(--line); border-radius:18px; background:#fbfcf8; text-align:center; }
 .data-state--compact { min-height:150px; padding:24px 18px; }
