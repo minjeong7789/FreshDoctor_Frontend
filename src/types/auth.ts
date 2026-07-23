@@ -20,6 +20,14 @@ export interface LoginResponse {
   expiresIn: number
 }
 
+export interface CurrentUserResponse {
+  userId: number
+  email: string
+  nickname: string
+  region: string
+  createdAt: ISODateTimeString
+}
+
 export interface SignupRequest {
   email: string
   password: string

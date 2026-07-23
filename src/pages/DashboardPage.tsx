@@ -3,8 +3,10 @@ import { ErrorMessage } from '../components/common/ErrorMessage'
 import { LoadingSpinner } from '../components/common/LoadingSpinner'
 import { RiskGauge } from '../components/dashboard/RiskGauge'
 import { ItemCard } from '../components/items/ItemCard'
+import { useCurrentUserQuery } from '../hooks/useCurrentUserQuery'
 import { useDashboardQuery } from '../hooks/useDashboardQuery'
 import { toDashboardItem } from '../utils/dashboard'
+import { formatNickname } from '../utils/user'
 
 function formatUpdatedAt(value: string) {
   const date = new Date(value)
@@ -21,6 +23,7 @@ function formatUpdatedAt(value: string) {
 
 export function DashboardPage() {
   const { data, error, isPending, refetch } = useDashboardQuery()
+  const { data: currentUser } = useCurrentUserQuery()
 
   if (isPending) {
     return <LoadingSpinner message="대시보드 정보를 불러오고 있어요." />
@@ -43,7 +46,7 @@ export function DashboardPage() {
     <>
       <header className="page-heading">
         <div>
-          <h1>안녕하세요, 김사장님</h1>
+          <h1>안녕하세요, {formatNickname(currentUser?.nickname)}</h1>
           <p>오늘의 식자재 가격 위험을 확인하고 안전하게 발주하세요.</p>
         </div>
         <button className="icon-button" aria-label="새 알림">🔔<i /></button>
