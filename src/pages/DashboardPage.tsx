@@ -1,8 +1,10 @@
+import { Link } from 'react-router-dom'
 import { EmptyState } from '../components/common/EmptyState'
 import { ErrorMessage } from '../components/common/ErrorMessage'
 import { LoadingSpinner } from '../components/common/LoadingSpinner'
 import { RiskGauge } from '../components/dashboard/RiskGauge'
 import { ItemCard } from '../components/items/ItemCard'
+import { ROUTES } from '../constants/routes'
 import { useCurrentUserQuery } from '../hooks/useCurrentUserQuery'
 import { useDashboardQuery } from '../hooks/useDashboardQuery'
 import { toDashboardItem } from '../utils/dashboard'
@@ -49,7 +51,9 @@ export function DashboardPage() {
           <h1>안녕하세요, {formatNickname(currentUser?.nickname)}</h1>
           <p>오늘의 식자재 가격 위험을 확인하고 안전하게 발주하세요.</p>
         </div>
-        <button className="icon-button" aria-label="새 알림">🔔<i /></button>
+        <Link className="icon-button" to={ROUTES.alerts} aria-label="알림함으로 이동">
+          🔔<i />
+        </Link>
       </header>
 
       <section className="hero-panel">
