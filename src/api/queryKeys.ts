@@ -12,9 +12,14 @@ export const queryKeys = {
   },
   items: {
     all: ['items'] as const,
-    list: () => [...queryKeys.items.all, 'list'] as const,
+    list: (keyword = '') =>
+      [...queryKeys.items.all, 'list', { keyword }] as const,
     detail: (itemCode: string) =>
       [...queryKeys.items.all, 'detail', itemCode] as const,
+  },
+  watchItems: {
+    all: ['watch-items'] as const,
+    list: () => [...queryKeys.watchItems.all, 'list'] as const,
   },
   prices: {
     all: ['prices'] as const,

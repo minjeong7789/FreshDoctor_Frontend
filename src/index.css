@@ -58,6 +58,8 @@ h1,h2,h3,p { margin-top:0; }.page-heading,.detail-heading,.section-heading { dis
 .pick .pick__check { position:absolute; top:7px; right:8px; margin:0; font-size:11px; }
 .pick .pick__emoji { margin:0; color:inherit; font-size:25px; line-height:1.1; }
 .pick>span:last-child { margin:0; color:inherit; font-size:12px; }
+.pick--readonly { cursor:default; }.pick--readonly strong,.pick--readonly small { display:block; }.pick--readonly strong { font-size:13px; }.pick--readonly small { color:var(--muted); font-size:11px; }
+.selected-summary--pending { display:flex; flex-direction:column; gap:4px; margin-top:24px; color:var(--muted); }.selected-summary--pending strong { color:var(--brand); font-size:13px; }.selected-summary--pending span { font-size:12px; }
 .selected-chip>span { margin-right:3px; font-size:15px; }
 .data-state { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:260px; padding:36px 24px; border:1px dashed var(--line); border-radius:18px; background:#fbfcf8; text-align:center; }
 .data-state--compact { min-height:150px; padding:24px 18px; }
