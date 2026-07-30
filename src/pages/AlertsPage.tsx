@@ -125,7 +125,7 @@ export function AlertsPage() {
         </div>
         {unreadCount > 0 && (
           <button
-            className="button button--ghost"
+            className="button button--ghost alerts-read-all"
             type="button"
             disabled={markAllAsReadMutation.isPending}
             onClick={() => markAllAsReadMutation.mutate()}
@@ -178,15 +178,6 @@ export function AlertsPage() {
                   <time dateTime={alert.occurredAt}>
                     {formatOccurredAt(alert.occurredAt)}
                   </time>
-                  {!alert.read && (
-                    <button
-                      type="button"
-                      disabled={isReading}
-                      onClick={() => markAsReadMutation.mutate(alert.alertId)}
-                    >
-                      {isReading ? '처리 중...' : '읽음'}
-                    </button>
-                  )}
                 </div>
               </article>
             )
