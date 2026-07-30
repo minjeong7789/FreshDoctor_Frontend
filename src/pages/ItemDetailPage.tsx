@@ -5,6 +5,7 @@ import { LoadingSpinner } from '../components/common/LoadingSpinner'
 import { RiskBadge } from '../components/common/RiskBadge'
 import { Sparkline } from '../components/items/Sparkline'
 import { ROUTES } from '../constants/routes'
+import { useItemNewsQuery } from '../hooks/useItemNewsQuery'
 import { useItemQuery } from '../hooks/useItemQuery'
 import { usePriceTrendQuery } from '../hooks/usePriceTrendQuery'
 import { useRecommendationQuery } from '../hooks/useRecommendationQuery'
@@ -47,12 +48,36 @@ function formatPriceDate(value: string) {
   }).format(date)
 }
 
+function formatNewsDate(value: string | null) {
+  if (!value) return ''
+
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+
+  return new Intl.DateTimeFormat('ko-KR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  }).format(date)
+}
+
+function cleanNewsText(value: string) {
+  return value
+    .replace(/<[^>]*>/g, '')
+    .replaceAll('&quot;', '"')
+    .replaceAll('&amp;', '&')
+    .replaceAll('&lt;', '<')
+    .replaceAll('&gt;', '>')
+    .replaceAll('&#39;', "'")
+}
+
 export function ItemDetailPage() {
   const { itemId = '' } = useParams()
   const itemQuery = useItemQuery(itemId)
   const priceQuery = usePriceTrendQuery(itemId, 14)
   const riskQuery = useRiskQuery(itemId)
   const recommendationQuery = useRecommendationQuery(itemId)
+  const newsQuery = useItemNewsQuery(itemId)
 
   if (!itemId) {
     return <ErrorMessage title="품목을 확인할 수 없어요." message="올바른 품목을 다시 선택해 주세요." />
@@ -86,6 +111,7 @@ export function ItemDetailPage() {
   const risk = riskQuery.data
   const price = priceQuery.data
   const recommendation = recommendationQuery.data
+  const newsItems = (newsQuery.data ?? []).slice(0, 4)
   const pricePoints = price?.prices ?? []
   const priceTrendTitle = pricePoints.length > 0
     ? `최근 ${pricePoints.length}일 가격 추이`
@@ -146,6 +172,45 @@ export function ItemDetailPage() {
           <h2>AI 추천 행동</h2>
           <p>{recommendation?.recommendation ?? '아직 생성된 AI 추천이 없습니다.'}</p>
         </div>
+      </section>
+      <section className="item-news">
+        <div className="item-news__heading">
+          <div>
+            <h2>{item.itemName} 관련 뉴스</h2>
+            <p>최근 수급과 가격에 영향을 줄 수 있는 소식을 확인해 보세요.</p>
+          </div>
+          <span>최대 4건</span>
+        </div>
+        {newsQuery.isPending ? (
+          <p className="item-news__state">관련 뉴스를 불러오는 중이에요.</p>
+        ) : newsQuery.error ? (
+          <div className="item-news__state">
+            <p>관련 뉴스를 불러오지 못했어요.</p>
+            <button type="button" onClick={() => void newsQuery.refetch()}>
+              다시 시도
+            </button>
+          </div>
+        ) : newsItems.length === 0 ? (
+          <p className="item-news__state">아직 수집된 관련 뉴스가 없어요.</p>
+        ) : (
+          <ul className="item-news__list">
+            {newsItems.map((news) => (
+              <li key={news.id}>
+                <a href={news.link} target="_blank" rel="noopener noreferrer">
+                  <div>
+                    <strong>{cleanNewsText(news.title)}</strong>
+                    <span>
+                      {[news.source, formatNewsDate(news.publishedAt)]
+                        .filter(Boolean)
+                        .join(' · ')}
+                    </span>
+                  </div>
+                  <span aria-hidden="true">↗</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     </>
   )

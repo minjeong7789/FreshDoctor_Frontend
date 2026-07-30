@@ -44,4 +44,9 @@ export const queryKeys = {
     latest: (itemCode: string) =>
       [...queryKeys.recommendations.all, 'latest', itemCode] as const,
   },
+  news: {
+    all: ['news'] as const,
+    list: (itemCode: string) =>
+      [...queryKeys.news.all, 'list', itemCode] as const,
+  },
 } as const
