@@ -7,3 +7,4 @@ export type { CurrentPriceResponse, PriceChangeResponse, PriceDirection, PricePo
 export type { RecommendationGenerationType, RecommendationResponse } from './recommendation'
 export type { RiskDashboardResponse, RiskFactorResponse, RiskGrade, RiskHistoryResponse } from './risk'
 export type { LoginRequest, LoginResponse, MessageResponse, NicknameAvailabilityResponse, RegionResponse, SignupRequest, SignupResponse } from './auth'
+export type { AlertResponse, AlertType, UnreadAlertCountResponse } from './alert'

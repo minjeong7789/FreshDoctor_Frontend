@@ -6,6 +6,7 @@ import { LoadingSpinner } from '../components/common/LoadingSpinner'
 import { RiskGauge } from '../components/dashboard/RiskGauge'
 import { ItemCard } from '../components/items/ItemCard'
 import { ROUTES } from '../constants/routes'
+import { useUnreadAlertCountQuery } from '../hooks/useAlertQueries'
 import { useCurrentUserQuery } from '../hooks/useCurrentUserQuery'
 import { useDashboardQuery } from '../hooks/useDashboardQuery'
 import { useWatchItemsQuery } from '../hooks/useItemSettingsQueries'
@@ -69,6 +70,7 @@ export function DashboardPage() {
   const { data, error, isPending, refetch } = useDashboardQuery()
   const { data: currentUser } = useCurrentUserQuery()
   const watchItemsQuery = useWatchItemsQuery(loggedIn)
+  const unreadAlertCountQuery = useUnreadAlertCountQuery(loggedIn)
 
   if (isPending) {
     return <LoadingSpinner message="대시보드 정보를 불러오고 있어요." />
@@ -97,6 +99,7 @@ export function DashboardPage() {
   const otherItems = canShowPersonalizedItems
     ? items.filter((item) => !watchItemCodes.has(item.id))
     : items
+  const unreadAlertCount = unreadAlertCountQuery.data?.unreadCount ?? 0
 
   return (
     <>
@@ -105,8 +108,21 @@ export function DashboardPage() {
           <h1>안녕하세요, {formatNickname(currentUser?.nickname)}</h1>
           <p>오늘의 식자재 가격 위험을 확인하고 안전하게 발주하세요.</p>
         </div>
-        <Link className="icon-button" to={ROUTES.alerts} aria-label="알림함으로 이동">
-          🔔<i />
+        <Link
+          className="icon-button"
+          to={ROUTES.alerts}
+          aria-label={
+            unreadAlertCount > 0
+              ? `읽지 않은 알림 ${unreadAlertCount}개, 알림함으로 이동`
+              : '알림함으로 이동'
+          }
+        >
+          🔔
+          {unreadAlertCount > 0 && (
+            <span className="icon-button__badge">
+              {unreadAlertCount > 99 ? '99+' : unreadAlertCount}
+            </span>
+          )}
         </Link>
       </header>
 
