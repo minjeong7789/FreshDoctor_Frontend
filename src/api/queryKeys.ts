@@ -49,4 +49,9 @@ export const queryKeys = {
     list: (itemCode: string) =>
       [...queryKeys.news.all, 'list', itemCode] as const,
   },
+  alerts: {
+    all: ['alerts'] as const,
+    list: () => [...queryKeys.alerts.all, 'list'] as const,
+    unreadCount: () => [...queryKeys.alerts.all, 'unread-count'] as const,
+  },
 } as const
