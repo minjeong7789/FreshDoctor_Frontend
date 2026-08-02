@@ -4,6 +4,14 @@ on:
   push:
     branches:
       - develop
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  AWS_REGION: ap-northeast-2
+  VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
 
 jobs:
   deploy:
@@ -16,7 +24,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: "20"
           cache: npm
 
       - name: Install dependencies
@@ -30,14 +38,13 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ vars.AWS_REGION }}
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Upload build files to S3
-        run: |
-          aws s3 sync dist/ s3://${{ vars.S3_BUCKET_NAME }} --delete
+        run: aws s3 sync dist/ "s3://${{ secrets.AWS_S3_BUCKET }}/" --delete
 
       - name: Invalidate CloudFront cache
-        run: |
-          aws cloudfront create-invalidation \
-            —distribution-id ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }} \
-            —paths "/*"
+        run: >
+          aws cloudfront create-invalidation
+          --distribution-id "${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}"
+          --paths "/*"
